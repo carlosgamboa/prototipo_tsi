@@ -79,6 +79,10 @@
     <Compile Include="Assets\JSON\JSONObject.cs" />
     <Compile Include="Assets\JSON\JSONTemplates.cs" />
     <Compile Include="Assets\JSON\VectorTemplates.cs" />
+    <Compile Include="Assets\Scripts\Agent.cs" />
+    <Compile Include="Assets\Scripts\CameraZoomControl.cs" />
+    <Compile Include="Assets\Scripts\Controller.cs" />
+    <Compile Include="Assets\Scripts\ExitPoint.cs" />
     <Compile Include="Assets\Scripts\MapReader.cs" />
     <Compile Include="Assets\Tiler\Scripts\Brush\CopyBrush.cs" />
     <Compile Include="Assets\Tiler\Scripts\Brush\Filter.cs" />

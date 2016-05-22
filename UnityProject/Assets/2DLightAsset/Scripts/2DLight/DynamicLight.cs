@@ -84,7 +84,8 @@ public class DynamicLight : MonoBehaviour {
 
 		for (int i=0; i<allColl2D.Length; i++) {
 			allMeshes[i] = (PolygonCollider2D)allColl2D[i];
-		}
+            Debug.Log(allMeshes[i].gameObject.name);
+        }
 
 
 

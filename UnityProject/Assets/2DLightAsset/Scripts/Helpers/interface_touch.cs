@@ -36,7 +36,7 @@ public class interface_touch: MonoBehaviour {
 			Vector2 p = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 			if(Input.GetKey(KeyCode.LeftControl) == true){
-				return; //************************************************************************************
+				//return; //************************************************************************************
 				Material m = new Material( cLight.GetComponent<DynamicLight>().lightMaterial as Material); 
 				
 
