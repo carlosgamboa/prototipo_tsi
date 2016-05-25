@@ -18,18 +18,33 @@ public class MapReader : MonoBehaviour {
     private int height = 0;
     private int width = 0;
 
+    private List<Agent> _agents;
+
+    public List<Agent> Agents
+    {
+        get
+        {
+            return _agents;
+        }
+
+        set
+        {
+            _agents = value;
+        }
+    }
+
     // Use this for initialization
     void Start () {
 
-        ReadFile();
-	}
+        _agents = new List<Agent>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
 
-    void ReadFile()
+    public void CreateMap()
     {
         TextAsset fileText = Resources.Load("first_floor") as TextAsset;
         JSONObject jsonObject = new JSONObject(fileText.text);
@@ -78,8 +93,7 @@ public class MapReader : MonoBehaviour {
         {
             int i = (int)(m / width);
             int j = m - width * i;
-            agents[i, j] = (int)agentsData.list[m].n;
-
+            agents[i, j] = (int)agentsData.list[m].n;     
         }
 
         Debug.Log(agents.GetLength(0));
@@ -102,14 +116,19 @@ public class MapReader : MonoBehaviour {
 
     private void PopulateAgents()
     {
+        int agentId = 1;
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
                 if (agents[i, j] == 9)
                 {
-                    Object obj = GameObject.Instantiate(agentPrefab, new Vector3(j, -i), Quaternion.identity);
-                    ((GameObject)obj).transform.parent = agentParent;
+                    GameObject obj = (GameObject)GameObject.Instantiate(agentPrefab, new Vector3(j, -i), Quaternion.identity);
+                    obj.transform.parent = agentParent;
+                    obj.name = "agent" + agentId.ToString();
+                    _agents.Add(obj.GetComponent<Agent>());
+
+                    agentId++;
                 }
             }
         }
@@ -129,5 +148,5 @@ public class MapReader : MonoBehaviour {
             }
         }
     }
-
+    
 }

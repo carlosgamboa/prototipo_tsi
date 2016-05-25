@@ -34,8 +34,8 @@ public class DynamicLight : MonoBehaviour {
 
 	[Range(4,20)]
 	public int lightSegments = 8;
-	
 
+    public List<GameObject> exitPoints;
 	
 	// Private variables
 	Mesh lightMesh;													// Mesh for our light mesh
@@ -67,6 +67,16 @@ public class DynamicLight : MonoBehaviour {
 
 	void Update(){
 
+        if (exitPoints == null)
+        {
+            exitPoints = new List<GameObject>();
+        }
+
+        if (exitPoints.Count > 0)
+        {
+            exitPoints.Clear();
+        }
+        
 		getAllMeshes();
 		setLight ();
 		renderLightMesh ();
@@ -84,7 +94,13 @@ public class DynamicLight : MonoBehaviour {
 
 		for (int i=0; i<allColl2D.Length; i++) {
 			allMeshes[i] = (PolygonCollider2D)allColl2D[i];
-            Debug.Log(allMeshes[i].gameObject.name);
+
+            if (allMeshes[i].gameObject.name == "PointCollider")
+            {
+                exitPoints.Add(allMeshes[i].transform.parent.gameObject);
+                // Debug.Log(allMeshes[i].gameObject.name);
+            }
+
         }
 
 
