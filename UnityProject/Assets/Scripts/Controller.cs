@@ -5,6 +5,7 @@ public class Controller : MonoBehaviour {
 
 
     public MapReader mapReader;
+    [Tooltip("value in seconds to update the main loop and call all agents to cast")]
     public float updateTick;
 
 
@@ -31,6 +32,7 @@ public class Controller : MonoBehaviour {
         StartCoroutine(UpdateCasting());        
     }
 
+    //Main loop routine
     IEnumerator UpdateCasting()
     {
         while(running)

@@ -36,7 +36,7 @@ public class DynamicLight : MonoBehaviour {
 	public int lightSegments = 8;
 
     public List<GameObject> exitPoints;
-	
+    public List<GameObject> agents;
 	// Private variables
 	Mesh lightMesh;													// Mesh for our light mesh
 	LayerMask layer;
@@ -79,7 +79,7 @@ public class DynamicLight : MonoBehaviour {
         
 		getAllMeshes();
 		setLight ();
-		renderLightMesh ();
+		//renderLightMesh ();
 		resetBounds ();
 
 	}
@@ -87,8 +87,6 @@ public class DynamicLight : MonoBehaviour {
 
 	void getAllMeshes(){
 		//allMeshes = FindObjectsOfType(typeof(PolygonCollider2D)) as PolygonCollider2D[];
-
-
 		Collider2D [] allColl2D = Physics2D.OverlapCircleAll(transform.position, lightRadius, layer);
 		allMeshes = new PolygonCollider2D[allColl2D.Length];
 
@@ -97,14 +95,13 @@ public class DynamicLight : MonoBehaviour {
 
             if (allMeshes[i].gameObject.name == "PointCollider")
             {
-                exitPoints.Add(allMeshes[i].transform.parent.gameObject);
-                // Debug.Log(allMeshes[i].gameObject.name);
+                exitPoints.Add(allMeshes[i].transform.parent.gameObject);               
             }
-
+            if (allMeshes[i].gameObject.name == "AgentCollider")
+            {
+                agents.Add(allMeshes[i].transform.parent.gameObject);
+            }
         }
-
-
-
 	}
 
 	void resetBounds(){

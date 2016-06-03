@@ -6,6 +6,7 @@ using System.IO;
 public class MapReader : MonoBehaviour {
 
 
+    public string fileName;
     public Transform agentParent; 
     public GameObject square;
     public GameObject agentPrefab;
@@ -46,7 +47,7 @@ public class MapReader : MonoBehaviour {
 
     public void CreateMap()
     {
-        TextAsset fileText = Resources.Load("first_floor") as TextAsset;
+        TextAsset fileText = Resources.Load(fileName) as TextAsset;
         JSONObject jsonObject = new JSONObject(fileText.text);
 
        
@@ -140,10 +141,14 @@ public class MapReader : MonoBehaviour {
         {
             for (int j = 0; j < height; j++)
             {
-                if (points[i, j] != 0)
+                int pointId = points[i, j];
+                if (pointId != 0)
                 {
-                    Object obj = GameObject.Instantiate(exitPointPrefab, new Vector3(j, -i), Quaternion.identity);
-                    ((GameObject)obj).transform.parent = this.transform;
+                    GameObject obj = (GameObject)GameObject.Instantiate(exitPointPrefab, new Vector3(j, -i), Quaternion.identity);
+                    obj.transform.parent = this.transform;
+                    ExitPoint tempPoint = obj.GetComponent<ExitPoint>();
+
+                    tempPoint.SetType(pointId);             
                 }
             }
         }
