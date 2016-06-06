@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Controller : MonoBehaviour {
 
@@ -20,6 +21,12 @@ public class Controller : MonoBehaviour {
 	
 	}
 
+    public void Restart()
+    {
+        //Application.LoadLevel(0);
+        SceneManager.LoadScene(0);
+    }
+
     public void Init()
     {
         mapReader.CreateMap();
@@ -39,7 +46,8 @@ public class Controller : MonoBehaviour {
         {
             for (int i = 0; i < mapReader.Agents.Count; i++)
             {
-                mapReader.Agents[i].Cast();
+                if (mapReader.Agents[i])
+                    mapReader.Agents[i].Cast();
             }
             yield return new WaitForSeconds(updateTick);
         }       

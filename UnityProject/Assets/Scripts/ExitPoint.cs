@@ -5,7 +5,8 @@ using System.Collections;
 public enum ExitPointType
 {
     Room = 0,
-    Building = 1
+    Building = 1,
+    Save = 2
 }
 
 public enum ExitPointPriority
@@ -21,6 +22,8 @@ public class ExitPoint : MonoBehaviour {
 
     public GameObject roomAsset;
     public GameObject buildingAsset;
+    public GameObject savePointAsset;
+    public GameObject objectCollider;
 
 	// Use this for initialization
 	void Start () {
@@ -34,12 +37,35 @@ public class ExitPoint : MonoBehaviour {
 
     public void SetType(int pointId)
     {
-        exitPointType = (pointId == 4 || pointId == 5) ? ExitPointType.Room : ExitPointType.Building;
-        exitPointPriority = (pointId == 4 || pointId == 6) ? ExitPointPriority.High : ExitPointPriority.Low;
+        //Debug.Log("exit point id" + pointId);
+        if (pointId == 12)
+        {
+            exitPointType = ExitPointType.Save;
+            exitPointPriority = ExitPointPriority.High;
 
-        //Active gameobjects
-        roomAsset.SetActive((exitPointType == ExitPointType.Room) ? true: false);
-        buildingAsset.SetActive((exitPointType == ExitPointType.Building) ? true : false);
+            savePointAsset.SetActive(true);
+            roomAsset.SetActive(false);
+            buildingAsset.SetActive(false);
+        }
+        else
+        {
+            exitPointType = (pointId == 5 || pointId == 6) ? ExitPointType.Room : ExitPointType.Building;
+            exitPointPriority = (pointId == 5 || pointId == 7) ? ExitPointPriority.High : ExitPointPriority.Low;
 
+            //Active gameobjects
+            savePointAsset.SetActive(false);
+            roomAsset.SetActive((exitPointType == ExitPointType.Room) ? true : false);
+            buildingAsset.SetActive((exitPointType == ExitPointType.Building) ? true : false);
+        }
+    }
+
+    public void DisableCollision()
+    {
+        objectCollider.layer = LayerMask.NameToLayer("Default");
+    }
+
+    public void EnableCollision()
+    {
+        objectCollider.layer = LayerMask.NameToLayer("Wall");
     }
 }

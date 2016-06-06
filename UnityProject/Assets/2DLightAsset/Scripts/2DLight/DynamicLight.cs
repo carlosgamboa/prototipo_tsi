@@ -41,8 +41,25 @@ public class DynamicLight : MonoBehaviour {
 	Mesh lightMesh;													// Mesh for our light mesh
 	LayerMask layer;
 
-	// Called at beginning of script execution
-	void Start () {
+    private bool renderLights = false;
+    public List<GameObject> excludeMeshes = new List<GameObject>();
+
+    public bool RenderLights
+    {
+        get
+        {
+            return renderLights;
+        }
+
+        set
+        {
+            renderLights = value;
+        }
+    }
+
+
+    // Called at beginning of script execution
+    void Start () {
 
 		PseudoSinCos.initPseudoSinCos();
 
@@ -79,7 +96,9 @@ public class DynamicLight : MonoBehaviour {
         
 		getAllMeshes();
 		setLight ();
-		//renderLightMesh ();
+
+        if (RenderLights)
+		    renderLightMesh ();
 		resetBounds ();
 
 	}
@@ -91,16 +110,7 @@ public class DynamicLight : MonoBehaviour {
 		allMeshes = new PolygonCollider2D[allColl2D.Length];
 
 		for (int i=0; i<allColl2D.Length; i++) {
-			allMeshes[i] = (PolygonCollider2D)allColl2D[i];
-
-            if (allMeshes[i].gameObject.name == "PointCollider")
-            {
-                exitPoints.Add(allMeshes[i].transform.parent.gameObject);               
-            }
-            if (allMeshes[i].gameObject.name == "AgentCollider")
-            {
-                agents.Add(allMeshes[i].transform.parent.gameObject);
-            }
+            allMeshes[i] = (PolygonCollider2D)allColl2D[i];		   
         }
 	}
 
@@ -136,9 +146,9 @@ public class DynamicLight : MonoBehaviour {
 			tempVerts.Clear();
 			PolygonCollider2D mf = allMeshes[m];
 
-			// las siguientes variables usadas para arregla bug de ordenamiento cuando
-			// los angulos calcuados se encuentran en cuadrantes mixtos (1 y 4)
-			lows = false; // check si hay menores a -0.5
+                // las siguientes variables usadas para arregla bug de ordenamiento cuando
+                // los angulos calcuados se encuentran en cuadrantes mixtos (1 y 4)
+            lows = false; // check si hay menores a -0.5
 			his = false; // check si hay mayores a 2.0
 
 			if(((1 << mf.transform.gameObject.layer) & layer) != 0){
@@ -147,11 +157,17 @@ public class DynamicLight : MonoBehaviour {
 					verts v = new verts();
 					// Convert to world space
 					Vector3 worldPoint = mf.transform.TransformPoint(mf.points[i]);
-					
-					
-					
-					// Reforma fecha 24/09/2014 (ultimo argumento lighradius X worldPoint.magnitude (expensivo pero preciso))
-					RaycastHit2D ray = Physics2D.Raycast(transform.position, worldPoint - transform.position, (worldPoint - transform.position).magnitude, layer);
+
+                    Vector3 dir = worldPoint - transform.position;
+                    Vector3 offsetToCast = Vector3.zero;
+                    if (allMeshes[m].gameObject.name == "PointCollider")
+                    {
+                        offsetToCast = dir.normalized * 1.5f;
+                    }
+
+                        // Reforma fecha 24/09/2014 (ultimo argumento lighradius X worldPoint.magnitude (expensivo pero preciso))
+                    
+                    RaycastHit2D ray = Physics2D.Raycast(transform.position + offsetToCast, dir, (worldPoint - transform.position).magnitude, layer);
 					
 					
 					if(ray){
@@ -277,7 +293,7 @@ public class DynamicLight : MonoBehaviour {
 						Vector2 from = (Vector2)fromCast;
 						Vector2 dir = (from - (Vector2)transform.position);
 
-						
+						/*
 						
 						float mag = (lightRadius);// - fromCast.magnitude;
 						const float checkPointLastRayOffset= 0.005f; 
@@ -306,7 +322,23 @@ public class DynamicLight : MonoBehaviour {
 
 						vL.angle = getVectorAngle(true,vL.pos.x, vL.pos.y);
 						allVertices.Add(vL);
-					}
+                        */
+
+
+                        if (allMeshes[m].gameObject.name == "PointCollider")
+                        {
+                            exitPoints.Add(allMeshes[m].transform.parent.gameObject);
+                        }
+                        if (allMeshes[m].gameObject.name == "AgentCollider")
+                        {
+                            agents.Add(allMeshes[m].transform.parent.gameObject);
+                        }
+                    }
+                    else
+                    {
+                        if (allMeshes[m].gameObject.name == "PointCollider")
+                            Debug.Log("point excluded, no light");
+                    }
 
 
 				}
@@ -316,10 +348,8 @@ public class DynamicLight : MonoBehaviour {
 
 			
 		}
-		
 
-
-
+        return;
 
 		//--Step 3: Generate vectors for light cast--//
 		//---------------------------------------------------------------------//

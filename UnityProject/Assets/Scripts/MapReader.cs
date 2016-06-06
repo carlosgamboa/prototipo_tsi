@@ -102,9 +102,9 @@ public class MapReader : MonoBehaviour {
 
     private void CreateEnvironment()
     {
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < height; j++)
+            for (int j = 0; j < width; j++)
             {
                 if (walls[i, j] == 1)
                 {
@@ -118,9 +118,9 @@ public class MapReader : MonoBehaviour {
     private void PopulateAgents()
     {
         int agentId = 1;
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < height; j++)
+            for (int j = 0; j < width; j++)
             {
                 if (agents[i, j] == 9)
                 {
@@ -137,9 +137,9 @@ public class MapReader : MonoBehaviour {
 
     private void CreateExitPoints()
     {
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < height; j++)
+            for (int j = 0; j < width; j++)
             {
                 int pointId = points[i, j];
                 if (pointId != 0)

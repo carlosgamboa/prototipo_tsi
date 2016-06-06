@@ -9,7 +9,7 @@ public class Agent : MonoBehaviour {
 
     public float agentSpeed = 1f;
     public float castDelay = 0.1f;
-
+    public bool renderCollision = false;
 
     private Transform _targetPosition;
     private ExitPoint _targetExitPoint;
@@ -22,11 +22,13 @@ public class Agent : MonoBehaviour {
 
         _dynamicCaster = caster.GetComponent<DynamicLight>();
         caster.SetActive(false);
+        agentSpeed = Random.Range(agentSpeed - 1.5f, agentSpeed + 0.5f);
     }
 
     // Update is called once per frame
     void Update() {
 
+        _dynamicCaster.RenderLights = renderCollision;
         if (_moving)
         {
             Vector3 movement = _targetPosition.position - transform.position;
@@ -35,7 +37,13 @@ public class Agent : MonoBehaviour {
             {
                 _exitPoints.Add(_targetExitPoint);
                 _moving = false;
-                Cast();
+                
+                if (_targetExitPoint.exitPointType == ExitPointType.Save)
+                {
+                    Destroy(this.gameObject);
+                }
+                else
+                    Cast();
             }
             else
             {
@@ -49,6 +57,11 @@ public class Agent : MonoBehaviour {
     {
         if (!_moving)
         {
+            _dynamicCaster.exitPoints.Clear();
+
+            //if (_targetExitPoint)
+           //     _targetExitPoint.DisableCollision();
+
             agentCollider.SetActive(false);
             caster.SetActive(true);
             StartCoroutine(CastRoutine());
@@ -59,7 +72,9 @@ public class Agent : MonoBehaviour {
     {
         yield return new WaitForSeconds(castDelay);
         caster.SetActive(false);
-        agentCollider.SetActive(true);
+        //agentCollider.SetActive(true);
+        //if (_targetExitPoint)
+        //    _targetExitPoint.EnableCollision();
 
         SetTargetPosition();
     }
@@ -67,6 +82,7 @@ public class Agent : MonoBehaviour {
     private void SetTargetPosition()
     {
         ExitPoint choosenPoint = null;
+        float distanceToChoosen = 99999f;
 
         foreach (ExitPoint temp in _exitPoints)
         {
@@ -76,20 +92,39 @@ public class Agent : MonoBehaviour {
         foreach (GameObject exitPoint in _dynamicCaster.exitPoints)
         {
             ExitPoint tempComponent = exitPoint.GetComponent<ExitPoint>();
-            if (tempComponent.exitPointType == ExitPointType.Building)
+            float distanceToTemp = (transform.position - tempComponent.transform.position).sqrMagnitude;
+
+            if (choosenPoint != null)
+                distanceToChoosen = (transform.position - choosenPoint.transform.position).sqrMagnitude;
+
+            if (tempComponent.exitPointType == ExitPointType.Save)
+            {
+                if (distanceToChoosen > distanceToTemp)
+                {
+                    choosenPoint = tempComponent;
+                    break;
+                }
+                
+            }
+            else if (tempComponent.exitPointType == ExitPointType.Building)
             {
                 if (choosenPoint == null)
                 {
                     choosenPoint = tempComponent;
                 }
+                if (choosenPoint.exitPointType == ExitPointType.Room)
+                {
+                    choosenPoint = tempComponent;
+                }
                 else if ((int)tempComponent.exitPointPriority > (int)choosenPoint.exitPointPriority)
                 {
+                    //TODO: CHECK DISTANCE 
                     choosenPoint = tempComponent;
                 }
             }
             else
             {
-                if (tempComponent.exitPointType == ExitPointType.Building)
+                if (choosenPoint != null && choosenPoint.exitPointType == ExitPointType.Building)
                     continue;
 
                 if (choosenPoint == null)
@@ -98,6 +133,7 @@ public class Agent : MonoBehaviour {
                 }
                 else if ((int)tempComponent.exitPointPriority > (int)choosenPoint.exitPointPriority)
                 {
+                    //TODO: CHECK DISTANCE 
                     choosenPoint = tempComponent;
                 }
             }
